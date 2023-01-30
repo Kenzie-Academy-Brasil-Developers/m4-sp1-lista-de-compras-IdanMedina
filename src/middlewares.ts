@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { lists } from "./database";
-import {
-  iPurchase,
-  iPurchaseList,
-  purchaseItemKeys,
-  purchaseListKeys,
-} from "./interfaces";
+import { iPurchase, iPurchaseList, purchaseListKeys } from "./interfaces";
 
 const checkIfPurchaseList = (
   req: Request,
@@ -37,7 +32,7 @@ const checkPostBodyRequest = (
 ): Response | void => {
   const keys: Array<string> = Object.keys(req.body);
   const requiredKeys: Array<purchaseListKeys> = ["listName", "data"];
-  const requiredDataKeys: Array<purchaseItemKeys> = ["name", "quantity"];
+  const requiredDataKeys: Array<string> = ["name", "quantity"];
 
   const checkBodyKeys: boolean = requiredKeys.every((key: string) => {
     return keys.includes(key);
@@ -55,20 +50,19 @@ const checkPostBodyRequest = (
     });
   }
 
-  /*   req.body.data.forEach((item: iPurchase) => {
+  req.body.data.forEach((item: iPurchase) => {
     const dataKeys: Array<string> = Object.keys(item);
-    console.log(dataKeys);
-    console.log(dataKeys === requiredDataKeys)
-    const checkKeys = requiredDataKeys.every((key: string) => {
-      dataKeys.includes(key);
+
+    const checkKeys = dataKeys.every((key: string) => {
+      return requiredDataKeys.includes(key);
     });
-    console.log(checkKeys);
+
     if (!checkKeys) {
       return res.status(400).json({
         message: `Required keys are: ${requiredDataKeys}`,
       });
     }
-  }); */
+  });
 
   req.body.data.forEach((item: iPurchase) => {
     if (typeof item.name !== "string") {
@@ -93,28 +87,32 @@ const checkPatchBodyRequest = (
   next: NextFunction
 ): Response | void => {
   const keys: Array<string> = Object.keys(req.body);
-  const requiredDataKeys: Array<purchaseItemKeys> = ["name", "quantity"];
+  const requiredDataKeys: Array<string> = ["name", "quantity"];
 
-  const checkBodyKeys: boolean = requiredDataKeys.every((key: string) => {
-    return keys.includes(key);
+  const checkBodyKeys: boolean = keys.every((key: string) => {
+    return requiredDataKeys.includes(key);
   });
 
   if (!checkBodyKeys) {
     return res.status(400).json({
-      message: `Required keys are: ${requiredDataKeys}`,
+      message: `Required keys are 'name' or 'quantity'`,
     });
   }
 
-  if (typeof req.body.name !== "string") {
-    return res.status(400).json({
-      message: `The product name need to be a string`,
-    });
+  if (req.body.name) {
+    if (typeof req.body.name !== "string") {
+      return res.status(400).json({
+        message: `The product name need to be a string`,
+      });
+    }
   }
 
-  if (typeof req.body.quantity !== "string") {
-    return res.status(400).json({
-      message: `The product quantity need to be a string`,
-    });
+  if (req.body.quantity) {
+    if (typeof req.body.quantity !== "string") {
+      return res.status(400).json({
+        message: `The product quantity need to be a string`,
+      });
+    }
   }
 
   return next();
