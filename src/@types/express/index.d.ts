@@ -1,11 +1,11 @@
 import * as express from 'express'
+import { iPurchaseList } from '../../interfaces'
 
 declare global {
     namespace Express {
         interface Request {
-            purchaseList: {
-                indexPurchaseList: number
-            }
+            indexPurchaseList: number,
+            purchaseList: iPurchaseList | undefined
         }
     }
 }

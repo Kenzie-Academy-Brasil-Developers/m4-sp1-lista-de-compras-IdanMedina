@@ -3,12 +3,16 @@ interface iPurchase {
   quantity: string;
 }
 
-interface iPurchaseList {
-  id: number;
+interface iPurchaseListRequest {
   listName: string;
   data: iPurchase[];
 }
 
-type purchaseListKeyes = 'listName' | 'data';
+interface iPurchaseList extends iPurchaseListRequest {
+  id: number;
+}
 
-export { iPurchase, iPurchaseList, purchaseListKeyes };
+type purchaseListKeys = 'listName' | 'data';
+type purchaseItemKeys = 'name' | 'quantity';
+
+export { iPurchase, iPurchaseListRequest, iPurchaseList, purchaseListKeys, purchaseItemKeys };
